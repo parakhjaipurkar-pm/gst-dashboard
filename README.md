@@ -11,6 +11,7 @@ A Django REST API for tracking GST filing compliance across onboarded GSTINs.
 
 - Python / Django 6
 - Django REST Framework
+- python-dotenv
 - SQLite
 
 ## Setup
