@@ -28,6 +28,16 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+## Environment Variables
+
+Copy `.env.example` to `.env` and update the values:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `SECRET_KEY` | Django secret key | Insecure dev key |
+| `DEBUG` | Enable debug mode | `True` |
+| `ALLOWED_HOSTS` | Comma-separated list of allowed hosts | `` (empty) |
+
 ## API
 
 ### `GET /api/unfiled-gstins/`
