@@ -80,6 +80,10 @@ curl http://127.0.0.1:8000/api/unfiled-gstins/
 | filed_date | DateField | Date filed (nullable) |
 | due_date | DateField | Filing due date |
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## License
 
 MIT
