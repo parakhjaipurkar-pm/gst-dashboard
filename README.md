@@ -30,6 +30,11 @@ python manage.py runserver
 
 Returns all active onboarded GSTINs that have not filed GSTR-1 or GSTR-3B for the current month.
 
+**Example**
+```bash
+curl http://127.0.0.1:8000/api/unfiled-gstins/
+```
+
 **Response**
 ```json
 {
