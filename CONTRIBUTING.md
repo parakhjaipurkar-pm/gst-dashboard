@@ -31,6 +31,10 @@ Contributions are welcome! Please follow these steps:
 2. Open a pull request against the `master` branch
 3. Describe what your change does and why
 
+## Changelog
+
+Please update [CHANGELOG.md](CHANGELOG.md) with a summary of your changes under the `[Unreleased]` section before submitting a PR.
+
 ## Reporting Issues
 
 Open an issue on GitHub with a clear description of the bug or feature request.
