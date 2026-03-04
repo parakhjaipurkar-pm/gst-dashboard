@@ -4,6 +4,13 @@ All notable changes to this project will be documented here.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-03-04
+
+### Added
+- `GET /api/filing-summary/` endpoint returning filed vs unfiled counts per period and return type
+- Tests for `FilingSummaryView` (7 tests)
+- Tests for `UnfiledGSTINsView` (9 tests)
+
 ## [0.1.0] - 2026-03-04
 
 ### Added
