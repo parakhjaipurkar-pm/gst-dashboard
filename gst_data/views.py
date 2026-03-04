@@ -66,3 +66,30 @@ class FilingSummaryView(APIView):
         ]
 
         return Response({'results': results})
+
+
+class GSTINComplianceRateView(APIView):
+    def get(self, request):
+        rows = (
+            GSTINFilingStatus.objects
+            .filter(return_type__in=REQUIRED_RETURNS)
+            .values('period', 'return_type')
+            .annotate(
+                total=Count('id'),
+                filed=Count('id', filter=Q(status='Filed')),
+            )
+            .order_by('period', 'return_type')
+        )
+
+        summary = defaultdict(dict)
+        for row in rows:
+            total = row['total']
+            filed = row['filed']
+            summary[row['period']][row['return_type']] = round((filed / total) * 100, 1) if total else 0.0
+
+        results = [
+            {'period': period, 'compliance_rate': rates}
+            for period, rates in summary.items()
+        ]
+
+        return Response({'results': results})
