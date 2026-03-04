@@ -6,6 +6,7 @@ A Django REST API for tracking GST filing compliance across onboarded GSTINs.
 
 - Models for onboarded GSTINs and their filing statuses
 - REST API endpoint to identify GSTINs that haven't filed GSTR-1 or GSTR-3B for the current month
+- Filing summary endpoint with filed vs unfiled counts per period
 
 ## Tech Stack
 
@@ -67,6 +68,37 @@ curl http://127.0.0.1:8000/api/unfiled-gstins/
       "admin_email": "admin@acmetraders.com",
       "period": "Mar-2026",
       "missing_returns": ["GSTR1", "GSTR3B"]
+    }
+  ]
+}
+```
+
+### `GET /api/filing-summary/`
+
+Returns filed vs unfiled counts per period and return type.
+
+**Example**
+```bash
+curl http://127.0.0.1:8000/api/filing-summary/
+```
+
+**Response**
+```json
+{
+  "results": [
+    {
+      "period": "Dec-2025",
+      "returns": {
+        "GSTR1": { "filed": 4, "unfiled": 0, "total": 4 },
+        "GSTR3B": { "filed": 4, "unfiled": 0, "total": 4 }
+      }
+    },
+    {
+      "period": "Jan-2026",
+      "returns": {
+        "GSTR1": { "filed": 2, "unfiled": 2, "total": 4 },
+        "GSTR3B": { "filed": 1, "unfiled": 3, "total": 4 }
+      }
     }
   ]
 }
