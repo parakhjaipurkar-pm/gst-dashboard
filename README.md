@@ -79,3 +79,7 @@ curl http://127.0.0.1:8000/api/unfiled-gstins/
 | status | CharField | Filed, Not Filed, or Pending |
 | filed_date | DateField | Date filed (nullable) |
 | due_date | DateField | Filing due date |
+
+## License
+
+MIT
