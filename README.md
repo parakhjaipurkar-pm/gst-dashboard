@@ -28,6 +28,12 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+## Running Tests
+
+```bash
+python manage.py test gst_data
+```
+
 ## Environment Variables
 
 Copy `.env.example` to `.env` and update the values:
