@@ -154,3 +154,63 @@ class FilingSummaryViewTests(TestCase):
         period = self._get_period(response.data['results'], 'Mar-2026')
         self.assertEqual(period['returns']['GSTR1']['unfiled'], 1)
         self.assertEqual(period['returns']['GSTR1']['filed'], 0)
+
+
+class GSTINComplianceRateViewTests(TestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.url = reverse('gstin-compliance-rate')
+        self.gstin = make_gstin()
+
+    def _get_period(self, results, period):
+        return next((r for r in results if r['period'] == period), None)
+
+    def test_returns_200(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_response_contains_results_key(self):
+        response = self.client.get(self.url)
+        self.assertIn('results', response.data)
+
+    def test_100_percent_when_all_filed(self):
+        make_filing(self.gstin, 'GSTR1', 'Mar-2026', 'Filed', filed_date=date.today())
+        response = self.client.get(self.url)
+        period = self._get_period(response.data['results'], 'Mar-2026')
+        self.assertEqual(period['compliance_rate']['GSTR1'], 100.0)
+
+    def test_0_percent_when_none_filed(self):
+        make_filing(self.gstin, 'GSTR1', 'Mar-2026', 'Not Filed')
+        response = self.client.get(self.url)
+        period = self._get_period(response.data['results'], 'Mar-2026')
+        self.assertEqual(period['compliance_rate']['GSTR1'], 0.0)
+
+    def test_partial_compliance_rate(self):
+        gstin2 = make_gstin(gstin='99ZZZZZ9999Z2ZZ')
+        make_filing(self.gstin, 'GSTR1', 'Mar-2026', 'Filed', filed_date=date.today())
+        make_filing(gstin2, 'GSTR1', 'Mar-2026', 'Not Filed')
+        response = self.client.get(self.url)
+        period = self._get_period(response.data['results'], 'Mar-2026')
+        self.assertEqual(period['compliance_rate']['GSTR1'], 50.0)
+
+    def test_pending_counts_as_unfiled(self):
+        make_filing(self.gstin, 'GSTR1', 'Mar-2026', 'Pending')
+        response = self.client.get(self.url)
+        period = self._get_period(response.data['results'], 'Mar-2026')
+        self.assertEqual(period['compliance_rate']['GSTR1'], 0.0)
+
+    def test_multiple_periods_returned(self):
+        make_filing(self.gstin, 'GSTR1', 'Jan-2026', 'Filed', filed_date=date.today())
+        make_filing(self.gstin, 'GSTR1', 'Feb-2026', 'Not Filed')
+        response = self.client.get(self.url)
+        periods = [r['period'] for r in response.data['results']]
+        self.assertIn('Jan-2026', periods)
+        self.assertIn('Feb-2026', periods)
+
+    def test_gstr1_and_gstr3b_reported_separately(self):
+        make_filing(self.gstin, 'GSTR1', 'Mar-2026', 'Filed', filed_date=date.today())
+        make_filing(self.gstin, 'GSTR3B', 'Mar-2026', 'Not Filed')
+        response = self.client.get(self.url)
+        period = self._get_period(response.data['results'], 'Mar-2026')
+        self.assertEqual(period['compliance_rate']['GSTR1'], 100.0)
+        self.assertEqual(period['compliance_rate']['GSTR3B'], 0.0)
