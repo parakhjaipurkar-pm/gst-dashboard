@@ -18,7 +18,7 @@ A Django REST API for tracking GST filing compliance across onboarded GSTINs.
 ```bash
 python -m venv venv
 source venv/Scripts/activate  # Windows
-pip install django djangorestframework
+pip install -r requirements.txt
 
 python manage.py migrate
 python manage.py runserver
