@@ -1,7 +1,9 @@
 from datetime import date
+from collections import defaultdict
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from django.db.models import Count, Q
 
 from .models import OnboardedGSTIN, GSTINFilingStatus
 
@@ -35,3 +37,32 @@ class UnfiledGSTINsView(APIView):
                 })
 
         return Response({'period': current_period, 'count': len(results), 'results': results})
+
+
+class FilingSummaryView(APIView):
+    def get(self, request):
+        rows = (
+            GSTINFilingStatus.objects
+            .filter(return_type__in=REQUIRED_RETURNS)
+            .values('period', 'return_type')
+            .annotate(
+                filed=Count('id', filter=Q(status='Filed')),
+                unfiled=Count('id', filter=~Q(status='Filed')),
+            )
+            .order_by('period', 'return_type')
+        )
+
+        summary = defaultdict(dict)
+        for row in rows:
+            summary[row['period']][row['return_type']] = {
+                'filed': row['filed'],
+                'unfiled': row['unfiled'],
+                'total': row['filed'] + row['unfiled'],
+            }
+
+        results = [
+            {'period': period, 'returns': returns}
+            for period, returns in summary.items()
+        ]
+
+        return Response({'results': results})
